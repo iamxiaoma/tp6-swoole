@@ -52,7 +52,27 @@ class ExceptionHandle extends Handle
     {
         // 添加自定义异常处理机制
 
+// 参数验证错误
+        if ($e instanceof ValidateException) {
+            return json($e->getError(), 422);
+        }
+
+        // 请求异常
+        if ($e instanceof HttpException && $request->isAjax()) {
+            return response($e->getMessage(), $e->getStatusCode());
+        }
+
+        $data = array(
+            'errcode' => $e->getCode(),
+            'errmsg' => $e->getMessage(),
+            'data' => ''
+        );
+
+        return json($data, 200);
+
+//        return json($e->getMessage(), $e->getCode());
+
         // 其他错误交给系统处理
-        return parent::render($request, $e);
+//        return parent::render($request, $e);
     }
 }
